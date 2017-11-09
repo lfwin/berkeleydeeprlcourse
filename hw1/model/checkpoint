@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/win/software/homework/hw1/model/model.tfl"
+all_model_checkpoint_paths: "/home/win/software/homework/hw1/model/model.tfl"

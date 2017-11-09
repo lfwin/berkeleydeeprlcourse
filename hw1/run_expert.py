@@ -22,7 +22,7 @@ def main():
     parser.add_argument('expert_policy_file', type=str)
     parser.add_argument('envname', type=str)
     parser.add_argument('--render', action='store_true')
-    parser.add_argument("--max_timesteps", type=int)
+    parser.add_argument("--max_timesteps", type=int, default=1000)
     parser.add_argument('--num_rollouts', type=int, default=20,
                         help='Number of expert roll outs')
     args = parser.parse_args()
@@ -41,6 +41,7 @@ def main():
         returns = []
         observations = []
         actions = []
+        step_list = []
         for i in range(args.num_rollouts):
             print('iter', i)
             obs = env.reset()
@@ -51,6 +52,7 @@ def main():
                 action = policy_fn(obs[None,:])
                 observations.append(obs)
                 actions.append(action)
+                step_list.append(steps)
                 obs, r, done, _ = env.step(action)
                 totalr += r
                 steps += 1
@@ -66,7 +68,13 @@ def main():
         print('std of return', np.std(returns))
 
         expert_data = {'observations': np.array(observations),
-                       'actions': np.array(actions)}
+                       'actions': np.array(actions), 
+                       'returns': np.array(r), 
+                       'steps': np.array(steps), }
+        #print(expert_data)
+        # pdb.set_trace()
+        # f = open("expert_data/"+args.envname+".p", 'wb')
+        pickle.dump(expert_data, open("expert_data/"+args.envname+".p", 'wb'))
 
 if __name__ == '__main__':
     main()

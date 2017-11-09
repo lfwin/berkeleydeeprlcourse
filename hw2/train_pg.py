@@ -35,7 +35,14 @@ def build_mlp(
 
     with tf.variable_scope(scope):
         # YOUR_CODE_HERE
-        pass
+        for i in range(n_layers):
+            if i == 0:
+                hidden = tf.layers.dense(input_placeholder, size, activation)
+            else:
+                hidden = tf.layers.dense(hidden, size, activation)
+		output = tf.layers.dense(hidden, output_size, output_activation)
+
+    return output
 
 def pathlength(path):
     return len(path["reward"])
@@ -170,7 +177,12 @@ def train_PG(exp_name='',
         sy_logits_na = TODO
         sy_sampled_ac = TODO # Hint: Use the tf.multinomial op
         sy_logprob_n = TODO
-
+        sy_logits_na = build_mlp(sy_ob_no, ac_dim, "policy_net", n_layers=2, //
+                           size=64, activation=tf.tanh, output_activation=None)
+        sy_sampled_ac = tf.multinomial(sy_logits_na, 1)
+        ac_index = tf.one_hot(sy_sampled_ac, ac_dim)
+        prob = tf.softmax(sy_logits_na)
+        sy_logprob_n = ac_index*tf.log(prob)
     else:
         # YOUR_CODE_HERE
         sy_mean = TODO
